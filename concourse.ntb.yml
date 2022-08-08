@@ -9,21 +9,41 @@ resources:
   - name: terraform
     type: terraform
     source:
-      env_name: staging
+      backend_type: s3
+      backend_config:
+        bucket: aspecta-balazs-concourse-test
+        key: mydir/terraform.tfstate
+        region: eu-west-1
+        access_key: AKIAYAVRR4KR6GOW56HJ
+        secret_key: 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
       vars:
         tag_name: concourse
       env:
-        AWS_ACCESS_KEY_ID: {{environment_access_key}}
-        AWS_SECRET_ACCESS_KEY: {{environment_secret_key}}
+        AWS_ACCESS_KEY_ID: AKIAYAVRR4KR6GOW56HJ
+        AWS_SECRET_ACCESS_KEY: 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
+        AWS_DEFAULT_REGION : eu-west-1
+  - name: source-code
+    type: git
+    source:
+      uri: github.com/NagyBz/task3.git
 
 jobs:
+- name: hello-world
+  plan:
+  - task: say-hello
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: {repository: alpine}
+      run:
+        path: echo
+        args: ["Hello, world!"]
+
 - name: terraform-plan
   plan:
-  - get: project-git-repo
+  - get: source-code
   - put: terraform
     params:
-      env_name: staging
-      terraform_source: project-git-repo/terraform
+      terraform_source: source-code
       plan_only: true
-      vars:
-        subnet_cidr: 10.0.1.0/24

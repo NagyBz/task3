@@ -3,7 +3,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "3.14.2"
 
-  name = "task1-balazs-vpc"
+  name = "task1-balazs-vp"
   cidr = "10.0.0.0/16"
 
   azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
